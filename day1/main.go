@@ -100,7 +100,7 @@ func Part2(lines []string) {
 }
 
 func main() {
-	path := "day1/input.txt"
+	path := "day1/sample.txt"
 	lines := Lines(path)
 
 	fmt.Println("Part 1:")
