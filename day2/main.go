@@ -78,26 +78,26 @@ func isInvalidPart2(id int) bool {
 	idStr := strconv.Itoa(id)
 	l := len(idStr)
 
-	for factor := 2; factor <= l; factor++ {
-		if l%factor != 0 {
+	for repeatSize := 1; repeatSize <= l/2; repeatSize++ {
+		if l%repeatSize != 0 {
 			continue
 		}
-		componentLen := l / factor
+		potentialRepeat := idStr[:repeatSize]
 
-		firstComponent := idStr[0:componentLen]
-
-		matched := true
-		for i := componentLen; i < l; i += componentLen {
-			if firstComponent != idStr[i:i+componentLen] {
-				matched = false
+		couldMatch := true
+		for pos := repeatSize; pos < l; pos += repeatSize {
+			if idStr[pos:pos+repeatSize] != potentialRepeat {
+				couldMatch = false
 				break
 			}
 		}
-		if matched {
-			fmt.Println(id, " is invalid with factor ", factor)
+
+		if couldMatch {
+			fmt.Println(idStr, " is invalid with repeating ", potentialRepeat)
 			return true
 		}
 	}
+
 	return false
 }
 
