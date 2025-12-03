@@ -32,47 +32,35 @@ func readBanks(filename string) [][]int {
 	return banks
 }
 
-func maxJoltage(bank []int) int {
-	pos := 0
-	firstDigit := 0
+func maxJoltage(bank []int, count int) int {
+	var inner func([]int, int, int) int
 
-	for idx, batt := range bank[:len(bank)-1] {
-		if batt > firstDigit {
-			pos = idx
-			firstDigit = batt
+	inner = func(remBank []int, remCount int, acc int) int {
+		firstDigit := slices.Max(remBank[:len(remBank)-remCount+1])
+		pos := slices.Index(remBank, firstDigit)
+
+		if remCount <= 1 {
+			return 10*acc + firstDigit
 		}
+		return inner(remBank[pos+1:], remCount-1, 10*acc+firstDigit)
 	}
 
-	secondDigit := slices.Max(bank[pos+1:])
-
-	return 10*firstDigit + secondDigit
+	return inner(bank, count, 0)
 }
 
 func part1(banks [][]int) {
 	total := 0
 	for _, bank := range banks {
-		fmt.Println("max joltage: ", maxJoltage(bank))
-		total += maxJoltage(bank)
+		total += maxJoltage(bank, 2)
 	}
 
 	fmt.Println("Total: ", total)
 }
 
-func part2MaxJoltage(bank []int, count int, acc int) int {
-	firstDigit := slices.Max(bank[:len(bank)-count+1])
-	pos := slices.Index(bank, firstDigit)
-
-	if count <= 1 {
-		return 10*acc + firstDigit
-	}
-	return part2MaxJoltage(bank[pos+1:], count-1, 10*acc+firstDigit)
-}
-
 func part2(banks [][]int) {
 	total := 0
 	for _, bank := range banks {
-		jolt := part2MaxJoltage(bank, 12, 0)
-		fmt.Println(jolt)
+		jolt := maxJoltage(bank, 12)
 		total += jolt
 	}
 
@@ -82,8 +70,6 @@ func part2(banks [][]int) {
 func main() {
 	path := "day3/input.txt"
 	banks := readBanks(path)
-
-	fmt.Println(banks)
 
 	fmt.Println("Part 1:")
 	part1(banks)
