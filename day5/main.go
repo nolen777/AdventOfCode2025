@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -71,19 +72,51 @@ func part1(ranges []ingredientRange, available []int) {
 	fmt.Println("Count: ", count)
 }
 
-func part2(ranges []ingredientRange, available []int) {
+func consolidate(a ingredientRange, b ingredientRange) ingredientRange {
+	if a.first > b.first {
+		panic("bad")
+	}
+
+	return ingredientRange{first: a.first, last: max(a.last, b.last)}
+}
+
+func part2(ranges []ingredientRange) {
+	slices.SortFunc(ranges, func(a ingredientRange, b ingredientRange) int {
+		if a.first == b.first {
+			return a.last - b.last
+		}
+		return a.first - b.first
+	})
+
+	consolidated := make([]ingredientRange, 0)
+	consolidated = append(consolidated, ranges[0])
+	curSize := 1
+
+	for _, r := range ranges[1:] {
+		if r.first-1 <= consolidated[curSize-1].last {
+			consolidated[curSize-1] = consolidate(consolidated[curSize-1], r)
+		} else {
+			consolidated = append(consolidated, r)
+			curSize++
+		}
+	}
+
+	totalCount := 0
+	for _, r := range consolidated {
+		fmt.Println(r, (r.last - r.first + 1))
+		totalCount += (r.last - r.first + 1)
+	}
+
+	fmt.Println("Fresh count: ", totalCount)
 }
 
 func main() {
 	path := "day5/input.txt"
 	ranges, available := readData(path)
 
-	fmt.Println(ranges)
-	fmt.Println(available)
-
 	fmt.Println("Part 1:")
 	part1(ranges, available)
 
 	fmt.Println("Part 2:")
-	part2(ranges, available)
+	part2(ranges)
 }
