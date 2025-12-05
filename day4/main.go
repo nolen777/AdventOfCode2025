@@ -98,6 +98,34 @@ func part1(m [][]bool) {
 }
 
 func part2(m [][]bool) {
+	count := 0
+	keepGoing := true
+	for keepGoing {
+		fmt.Println("Next iteration")
+		keepGoing = false
+		for i := 0; i < len(m); i++ {
+			for j := 0; j < len(m[i]); j++ {
+				if !m[i][j] {
+					fmt.Print(".")
+					continue
+				}
+				adjCount := adjacentCount(m, i, j)
+
+				if adjCount < 4 {
+					count++
+					keepGoing = true
+					m[i][j] = false
+					fmt.Print("x")
+				} else {
+					fmt.Print("@")
+				}
+			}
+			fmt.Println("")
+		}
+	}
+
+	fmt.Println("Total: ", count)
+
 }
 
 func main() {
